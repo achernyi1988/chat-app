@@ -7,6 +7,7 @@ const Filter = require("bad-words")
 const { log, log_err, log_warn } = require("../utils/logs")
 const { generateMessage, generateLocationMessage } = require("./utils/messages")
 const { addUser, removeUser, getUser, getUserInRoom } = require("./utils/users")
+const { getAvailableRooms } = require("./utils/rooms")
 
 const app = express()
 const server = http.createServer(app)
@@ -32,7 +33,7 @@ io.on("connection", (socket) => {
 
 
    socket.on("join", (options, callback) => {
-      //log_err("join username ", options.username, "socket.id ", socket.id)
+      log_err("join ", options)
 
       const { error, user } = addUser({ id: socket.id, ...options })
 
@@ -95,6 +96,19 @@ io.on("connection", (socket) => {
       io.to(user.room).emit("locationMessage",
          generateLocationMessage(
             user.username, `https://google.com/maps?q=${pos.latitude},${pos.longitude}`))
+      if (callback)
+         callback()
+   })
+
+   socket.on("getAvailableRooms", (callback) => {
+
+      const rooms = getAvailableRooms()
+
+      if (!rooms) {
+         callback("rooms are not available")
+      }
+
+      socket.emit("getAvailableRooms", rooms)
       if (callback)
          callback()
    })
