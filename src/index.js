@@ -94,7 +94,7 @@ io.on("connection", (socket) => {
 
       io.to(user.room).emit("locationMessage",
          generateLocationMessage(
-            user.username, `https://google.com/maps?q=${pos.latitude}, ${pos.longitude}`))
+            user.username, `https://google.com/maps?q=${pos.latitude},${pos.longitude}`))
       if (callback)
          callback()
    })
